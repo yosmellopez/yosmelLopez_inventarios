@@ -1,0 +1,33 @@
+
+entity Tienda {
+	nombre String required,
+    codigo String required,
+}
+
+entity Producto {
+    cod String required,
+    name String required,
+    price Double required,
+    stock Long required
+}
+
+entity Cliente {
+    nombre String required,
+    identificacion String required,
+    foto String required,
+}
+
+
+entity Transaccion {
+    fecha LocalDate required,
+    hora Instant required,
+    cantidad Integer required,
+}
+
+relationship OneToMany{
+	Producto to	Transaccion{producto},
+   	Cliente to Transaccion{cliente}
+}
+
+service Tienda, Producto, Cliente with serviceClass
+dto Producto with mapstruct

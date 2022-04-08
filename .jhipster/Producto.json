@@ -1,0 +1,43 @@
+{
+  "applications": "*",
+  "changelogDate": "20220408052947",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "producto",
+  "fields": [
+    {
+      "fieldName": "cod",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "price",
+      "fieldType": "Double",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "stock",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Producto",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "transaccion",
+      "otherEntityRelationshipName": "producto",
+      "relationshipName": "transaccion",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

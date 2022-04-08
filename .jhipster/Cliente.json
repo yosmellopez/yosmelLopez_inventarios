@@ -1,0 +1,38 @@
+{
+  "applications": "*",
+  "changelogDate": "20220408052948",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "cliente",
+  "fields": [
+    {
+      "fieldName": "nombre",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "identificacion",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "foto",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Cliente",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "transaccion",
+      "otherEntityRelationshipName": "cliente",
+      "relationshipName": "transaccion",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

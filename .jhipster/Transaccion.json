@@ -1,0 +1,44 @@
+{
+  "applications": "*",
+  "changelogDate": "20220408070519",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "transaccion",
+  "fields": [
+    {
+      "fieldName": "fecha",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "hora",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "cantidad",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Transaccion",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "producto",
+      "otherEntityRelationshipName": "transaccion",
+      "relationshipName": "producto",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "cliente",
+      "otherEntityRelationshipName": "transaccion",
+      "relationshipName": "cliente",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}

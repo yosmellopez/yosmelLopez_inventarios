@@ -1,6 +1,7 @@
 package com.bancopichincha.inventario.config;
 
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
+import java.time.LocalTime;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.cache.jcache.ConfigSettings;
@@ -46,6 +47,12 @@ public class CacheConfiguration {
             createCache(cm, com.bancopichincha.inventario.domain.User.class.getName());
             createCache(cm, com.bancopichincha.inventario.domain.Authority.class.getName());
             createCache(cm, com.bancopichincha.inventario.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.bancopichincha.inventario.domain.Tienda.class.getName());
+            createCache(cm, com.bancopichincha.inventario.domain.Producto.class.getName());
+            createCache(cm, com.bancopichincha.inventario.domain.Cliente.class.getName());
+            createCache(cm, com.bancopichincha.inventario.domain.Producto.class.getName() + ".transaccions");
+            createCache(cm, com.bancopichincha.inventario.domain.Cliente.class.getName() + ".transaccions");
+            createCache(cm, com.bancopichincha.inventario.domain.Transaccion.class.getName());
             // jhipster-needle-caffeine-add-entry
         };
     }
