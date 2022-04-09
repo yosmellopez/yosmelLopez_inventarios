@@ -15,7 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -57,9 +65,9 @@ public class ProductoResource {
         }
         ProductoDTO result = productoService.save(productoDTO);
         return ResponseEntity
-            .created(new URI("/api/productos/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .created(new URI("/api/productos/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -74,8 +82,8 @@ public class ProductoResource {
      */
     @PutMapping("/productos/{id}")
     public ResponseEntity<ProductoDTO> updateProducto(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody ProductoDTO productoDTO
+            @PathVariable(value = "id", required = false) final Long id,
+            @Valid @RequestBody ProductoDTO productoDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Producto : {}, {}", id, productoDTO);
         if (productoDTO.getId() == null) {
@@ -91,9 +99,9 @@ public class ProductoResource {
 
         ProductoDTO result = productoService.update(productoDTO);
         return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, productoDTO.getId().toString()))
-            .body(result);
+                .ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, productoDTO.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -105,14 +113,17 @@ public class ProductoResource {
      * or with status {@code 400 (Bad Request)} if the productoDTO is not valid,
      * or with status {@code 404 (Not Found)} if the productoDTO is not found,
      * or with status {@code 500 (Internal Server Error)} if the productoDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/productos/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/productos/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<ProductoDTO> partialUpdateProducto(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody ProductoDTO productoDTO
-    ) throws URISyntaxException {
+            @PathVariable(value = "id", required = false) final Long id,
+            @NotNull @RequestBody ProductoDTO productoDTO
+    ) {
         log.debug("REST request to partial update Producto partially : {}, {}", id, productoDTO);
+
+        if (productoDTO.getStock() <= 0) {
+            throw new BadRequestAlertException("El Stock del producto no puede ser menor o igual que 0", ENTITY_NAME, "stocklessthanzero");
+        }
         if (productoDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -127,8 +138,8 @@ public class ProductoResource {
         Optional<ProductoDTO> result = productoService.partialUpdate(productoDTO);
 
         return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, productoDTO.getId().toString())
+                result,
+                HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, productoDTO.getId().toString())
         );
     }
 
@@ -167,8 +178,8 @@ public class ProductoResource {
         log.debug("REST request to delete Producto : {}", id);
         productoService.delete(id);
         return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
-            .build();
+                .noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+                .build();
     }
 }

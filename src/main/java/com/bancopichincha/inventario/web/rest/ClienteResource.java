@@ -15,7 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -57,9 +65,9 @@ public class ClienteResource {
         }
         Cliente result = clienteService.save(cliente);
         return ResponseEntity
-            .created(new URI("/api/clientes/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .created(new URI("/api/clientes/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -70,13 +78,12 @@ public class ClienteResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated cliente,
      * or with status {@code 400 (Bad Request)} if the cliente is not valid,
      * or with status {@code 500 (Internal Server Error)} if the cliente couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/clientes/{id}")
     public ResponseEntity<Cliente> updateCliente(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Cliente cliente
-    ) throws URISyntaxException {
+            @PathVariable(value = "id", required = false) final Long id,
+            @Valid @RequestBody Cliente cliente
+    ) {
         log.debug("REST request to update Cliente : {}, {}", id, cliente);
         if (cliente.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -91,9 +98,9 @@ public class ClienteResource {
 
         Cliente result = clienteService.update(cliente);
         return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cliente.getId().toString()))
-            .body(result);
+                .ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cliente.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -105,13 +112,12 @@ public class ClienteResource {
      * or with status {@code 400 (Bad Request)} if the cliente is not valid,
      * or with status {@code 404 (Not Found)} if the cliente is not found,
      * or with status {@code 500 (Internal Server Error)} if the cliente couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/clientes/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/clientes/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Cliente> partialUpdateCliente(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Cliente cliente
-    ) throws URISyntaxException {
+            @PathVariable(value = "id", required = false) final Long id,
+            @NotNull @RequestBody Cliente cliente
+    ) {
         log.debug("REST request to partial update Cliente partially : {}, {}", id, cliente);
         if (cliente.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -127,8 +133,8 @@ public class ClienteResource {
         Optional<Cliente> result = clienteService.partialUpdate(cliente);
 
         return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cliente.getId().toString())
+                result,
+                HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cliente.getId().toString())
         );
     }
 
@@ -167,8 +173,8 @@ public class ClienteResource {
         log.debug("REST request to delete Cliente : {}", id);
         clienteService.delete(id);
         return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
-            .build();
+                .noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+                .build();
     }
 }

@@ -21,6 +21,7 @@ public class ProductoDTO implements Serializable {
     private Double price;
 
     @NotNull
+    @Min(value = 1, message = "El Stock no debe ser menor o igual a 0")
     private Long stock;
 
     public Long getId() {
