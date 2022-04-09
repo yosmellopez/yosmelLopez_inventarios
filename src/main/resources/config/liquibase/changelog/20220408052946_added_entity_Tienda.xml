@@ -22,6 +22,18 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20220408052946-1-data" author="jhipster">
+        <loadData
+                file="config/liquibase/data/tienda.csv"
+                separator=";"
+                tableName="tienda"
+                usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="nombre" type="string"/>
+            <column name="codigo" type="string"/>
+        </loadData>
+    </changeSet>
+
     <changeSet id="20220408052946-2" author="yosmel">
         <createTable tableName="tienda_producto">
             <column name="tienda_id" type="bigint">

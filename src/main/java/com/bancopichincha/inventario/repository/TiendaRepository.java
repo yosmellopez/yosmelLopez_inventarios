@@ -2,7 +2,6 @@ package com.bancopichincha.inventario.repository;
 
 import com.bancopichincha.inventario.domain.Tienda;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TiendaRepository extends JpaRepository<Tienda, Long> {
 
-    @NotNull
+    @Override
     @EntityGraph(attributePaths = {"productos"})
     List<Tienda> findAll();
 }

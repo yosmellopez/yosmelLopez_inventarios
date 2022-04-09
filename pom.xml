@@ -79,7 +79,7 @@
         <modernizer-maven-plugin.version>2.4.0</modernizer-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
-        <jib-maven-plugin.image>eclipse-temurin:11-jre-focal</jib-maven-plugin.image>
+        <jib-maven-plugin.image>bellsoft/liberica-openjdk-alpine-musl:11.0.14</jib-maven-plugin.image>
         <jib-maven-plugin.architecture>amd64</jib-maven-plugin.architecture>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
@@ -598,14 +598,14 @@
                             </platforms>
                         </from>
                         <to>
-                            <image>inventario:latest</image>
+                            <image>yosmellopez/inventario:v1</image>
                         </to>
                         <container>
-                            <entrypoint>
-                                <shell>bash</shell>
-                                <option>-c</option>
-                                <arg>/entrypoint.sh</arg>
-                            </entrypoint>
+                            <jvmFlags>
+                                <jvmFlag>-XX:+AlwaysPreTouch</jvmFlag>
+                                <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+                            </jvmFlags>
+                            <mainClass>com.bancopichincha.inventario.InventarioApp</mainClass>
                             <ports>
                                 <port>8080</port>
                             </ports>
@@ -616,15 +616,6 @@
                             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                             <user>1000</user>
                         </container>
-                        <extraDirectories>
-                            <paths>src/main/docker/jib</paths>
-                            <permissions>
-                                <permission>
-                                    <file>/entrypoint.sh</file>
-                                    <mode>755</mode>
-                                </permission>
-                            </permissions>
-                        </extraDirectories>
                     </configuration>
                 </plugin>
                 <plugin>

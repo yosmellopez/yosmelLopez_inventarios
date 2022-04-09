@@ -1,7 +1,6 @@
 package com.bancopichincha.inventario.config;
 
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
-import java.time.LocalTime;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.cache.jcache.ConfigSettings;
@@ -12,7 +11,8 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import tech.jhipster.config.JHipsterProperties;
 import tech.jhipster.config.cache.PrefixedKeyGenerator;
 
@@ -21,7 +21,9 @@ import tech.jhipster.config.cache.PrefixedKeyGenerator;
 public class CacheConfiguration {
 
     private GitProperties gitProperties;
+
     private BuildProperties buildProperties;
+
     private final javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration;
 
     public CacheConfiguration(JHipsterProperties jHipsterProperties) {
@@ -48,6 +50,7 @@ public class CacheConfiguration {
             createCache(cm, com.bancopichincha.inventario.domain.Authority.class.getName());
             createCache(cm, com.bancopichincha.inventario.domain.User.class.getName() + ".authorities");
             createCache(cm, com.bancopichincha.inventario.domain.Tienda.class.getName());
+            createCache(cm, com.bancopichincha.inventario.domain.Tienda.class.getName() + ".productos");
             createCache(cm, com.bancopichincha.inventario.domain.Producto.class.getName());
             createCache(cm, com.bancopichincha.inventario.domain.Cliente.class.getName());
             createCache(cm, com.bancopichincha.inventario.domain.Producto.class.getName() + ".transaccions");
