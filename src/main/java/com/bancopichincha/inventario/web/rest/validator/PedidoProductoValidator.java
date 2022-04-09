@@ -61,10 +61,8 @@ public class PedidoProductoValidator implements Validator {
                         long restante = stock - pedidoProducto.getCantidad();
                         if (restante < -5 && restante >= -10) {
                             productoService.updateProductStockInTen(producto);
-                        } else if (restante < 0 && restante >= -5) {
-                            productoService.updateProductStockInFive(producto);
                         } else if (restante < -10) {
-                            errors.reject("productos", "Unidades no disponibles (> 10) ");
+                            errors.reject("productos", "Unidades no disponibles (> 10)");
                         }
                     }
                 }, () -> errors.reject("productos", "El producto con identificador " + pedidoProducto.getProductoId() + " no existe"));

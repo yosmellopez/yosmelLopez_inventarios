@@ -33,10 +33,13 @@ public class TransaccionService {
 
     private final TiendaRepository tiendaRepository;
 
-    public TransaccionService(TransaccionRepository transaccionRepository, ProductoRepository productoRepository, TiendaRepository tiendaRepository) {
+    private final ProductoService productoService;
+
+    public TransaccionService(TransaccionRepository transaccionRepository, ProductoRepository productoRepository, TiendaRepository tiendaRepository, ProductoService productoService) {
         this.transaccionRepository = transaccionRepository;
         this.productoRepository = productoRepository;
         this.tiendaRepository = tiendaRepository;
+        this.productoService = productoService;
     }
 
     /**
@@ -109,8 +112,14 @@ public class TransaccionService {
             transaccion.setHora(Instant.now());
             transaccion.setCantidad(pedidoProducto.getCantidad());
             transaccionRepository.save(transaccion);
-            productoBd.setStock(productoBd.getStock() - pedidoProducto.getCantidad());
-            productoRepository.save(productoBd);
+
+            Long stock = productoBd.getStock();
+            long restante = stock - pedidoProducto.getCantidad();
+            productoBd.setStock(restante);
+            productoRepository.saveAndFlush(productoBd);
+            if (restante < 0 && restante >= -5) {
+                productoService.updateProductStockInFive(productoBd);
+            }
         }
     }
 }
