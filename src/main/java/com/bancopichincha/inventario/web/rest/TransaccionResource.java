@@ -115,7 +115,7 @@ public class TransaccionResource {
     public void getAllEmployeesInCsv(HttpServletResponse servletResponse, @Valid @DateRange RangeDateParam dateParam, @RequestParam Long clientId) throws IOException {
         servletResponse.setContentType("text/csv");
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"transacciones.csv\"");
-        csvExportService.writeTransaccionesToCsv(servletResponse.getWriter(), dateParam, clientId);
+        csvExportService.writeTransaccionesToCsv(servletResponse, dateParam, clientId);
     }
 
     /**

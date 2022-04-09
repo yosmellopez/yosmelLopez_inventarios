@@ -178,6 +178,15 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
         return create(ex, problem, request);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleResourceNotFoundException(ResourceNotFoundException ex, NativeWebRequest request) {
+        return create(
+                ex,
+                request,
+                HeaderUtil.createFailureAlert(applicationName, true, "noEntity", ex.getTitle(), ex.getError())
+        );
+    }
+
     @Override
     public ProblemBuilder prepare(final Throwable throwable, final StatusType status, final URI type) {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());

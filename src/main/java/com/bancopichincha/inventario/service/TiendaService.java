@@ -115,6 +115,7 @@ public class TiendaService {
         Tienda tienda = optionalTienda.orElseThrow(() -> new EntityNotFoundException("No se encuentra la tienda con el identificador " + id));
         tienda.addAllProducto(tiendaProducto.getProductos().stream().map(productoMapper::toEntity).collect(Collectors.toList()));
         tiendaRepository.save(tienda);
+        tiendaProducto.setTienda(tienda);
         return tiendaProducto;
     }
 

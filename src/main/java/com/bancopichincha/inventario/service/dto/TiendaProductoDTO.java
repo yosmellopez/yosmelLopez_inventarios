@@ -1,11 +1,13 @@
 package com.bancopichincha.inventario.service.dto;
 
 import com.bancopichincha.inventario.domain.Tienda;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TiendaProductoDTO {
 
+    @JsonIgnoreProperties(value = {"productos"})
     private Tienda tienda;
 
     private List<ProductoDTO> productos = new ArrayList<>();
