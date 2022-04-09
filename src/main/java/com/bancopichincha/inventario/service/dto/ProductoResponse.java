@@ -1,19 +1,34 @@
 package com.bancopichincha.inventario.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ProductoResponse {
 
-    @JsonProperty(value = "prods")
-    private List<ProductoDTO> productos = new ArrayList<>();
+    private String cod;
 
-    public List<ProductoDTO> getProductos() {
-        return productos;
+    private String name;
+
+    private Long stock;
+
+    public String getCod() {
+        return cod;
     }
 
-    public void setProductos(List<ProductoDTO> productos) {
-        this.productos = productos;
+    public void setCod(String cod) {
+        this.cod = cod;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getStock() {
+        return stock;
+    }
+
+    public void setStock(Long stock) {
+        this.stock = stock;
     }
 }

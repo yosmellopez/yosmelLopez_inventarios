@@ -4,8 +4,7 @@ import com.bancopichincha.inventario.config.ApplicationProperties;
 import com.bancopichincha.inventario.service.ProductoService;
 import com.bancopichincha.inventario.service.client.ProductServiceClient;
 import com.bancopichincha.inventario.service.dto.ProductoDTO;
-import com.bancopichincha.inventario.service.dto.ProductoResponse;
-import com.bancopichincha.inventario.service.mapper.ProductoMapper;
+import com.bancopichincha.inventario.service.dto.ListProductoResponse;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -16,6 +15,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
@@ -28,7 +28,7 @@ import tech.jhipster.config.JHipsterConstants;
 @EnableFeignClients
 @SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
-public class InventarioApp {
+public class InventarioApp implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(InventarioApp.class);
 
@@ -61,11 +61,6 @@ public class InventarioApp {
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
                 activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)) {
             log.error("You have misconfigured your application! It should not " + "run with both the 'dev' and 'cloud' profiles at the same time.");
-        }
-        ProductoResponse productoResponse = serviceClient.getProductsFromMockService();
-        List<ProductoDTO> productos = productoResponse.getProductos();
-        for (ProductoDTO producto : productos) {
-            productoService.save(producto);
         }
     }
 
@@ -109,5 +104,14 @@ public class InventarioApp {
                 contextPath,
                 env.getActiveProfiles().length == 0 ? env.getDefaultProfiles() : env.getActiveProfiles()
         );
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        ListProductoResponse productoResponse = serviceClient.getProductsFromMockService();
+        List<ProductoDTO> productos = productoResponse.getProductos();
+        for (ProductoDTO producto : productos) {
+            productoService.save(producto);
+        }
     }
 }

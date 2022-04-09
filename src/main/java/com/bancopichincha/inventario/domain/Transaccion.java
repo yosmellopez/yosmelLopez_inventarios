@@ -4,8 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -38,11 +45,15 @@ public class Transaccion implements Serializable {
     private Integer cantidad;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "transaccions" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"transaccions"}, allowSetters = true)
+    private Tienda tienda;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = {"transaccions"}, allowSetters = true)
     private Producto producto;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "transaccions" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"transaccions"}, allowSetters = true)
     private Cliente cliente;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -125,6 +136,19 @@ public class Transaccion implements Serializable {
         return this;
     }
 
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
+    }
+
+    public Transaccion tienda(Tienda tienda) {
+        this.setTienda(tienda);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -148,10 +172,10 @@ public class Transaccion implements Serializable {
     @Override
     public String toString() {
         return "Transaccion{" +
-            "id=" + getId() +
-            ", fecha='" + getFecha() + "'" +
-            ", hora='" + getHora() + "'" +
-            ", cantidad=" + getCantidad() +
-            "}";
+                "id=" + getId() +
+                ", fecha='" + getFecha() + "'" +
+                ", hora='" + getHora() + "'" +
+                ", cantidad=" + getCantidad() +
+                "}";
     }
 }

@@ -2,7 +2,9 @@ package com.bancopichincha.inventario.service;
 
 import com.bancopichincha.inventario.domain.Producto;
 import com.bancopichincha.inventario.repository.ProductoRepository;
+import com.bancopichincha.inventario.service.client.ProductServiceClient;
 import com.bancopichincha.inventario.service.dto.ProductoDTO;
+import com.bancopichincha.inventario.service.dto.ProductoResponse;
 import com.bancopichincha.inventario.service.mapper.ProductoMapper;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +29,12 @@ public class ProductoService {
 
     private final ProductoMapper productoMapper;
 
-    public ProductoService(ProductoRepository productoRepository, ProductoMapper productoMapper) {
+    private final ProductServiceClient serviceClient;
+
+    public ProductoService(ProductoRepository productoRepository, ProductoMapper productoMapper, ProductServiceClient serviceClient) {
         this.productoRepository = productoRepository;
         this.productoMapper = productoMapper;
+        this.serviceClient = serviceClient;
     }
 
     /**
@@ -67,14 +73,14 @@ public class ProductoService {
         log.debug("Request to partially update Producto : {}", productoDTO);
 
         return productoRepository
-            .findById(productoDTO.getId())
-            .map(existingProducto -> {
-                productoMapper.partialUpdate(existingProducto, productoDTO);
+                .findById(productoDTO.getId())
+                .map(existingProducto -> {
+                    productoMapper.partialUpdate(existingProducto, productoDTO);
 
-                return existingProducto;
-            })
-            .map(productoRepository::save)
-            .map(productoMapper::toDto);
+                    return existingProducto;
+                })
+                .map(productoRepository::save)
+                .map(productoMapper::toDto);
     }
 
     /**
@@ -108,5 +114,20 @@ public class ProductoService {
     public void delete(Long id) {
         log.debug("Request to delete Producto : {}", id);
         productoRepository.deleteById(id);
+    }
+
+    public void updateProductStockInTen(Producto producto) {
+        ProductoResponse productoResponse = serviceClient.getTenProductsFromMockService();
+        Long stock = producto.getStock();
+        producto.setStock(stock + productoResponse.getStock());
+        productoRepository.save(producto);
+    }
+
+    @Async
+    public void updateProductStockInFive(Producto producto) {
+        ProductoResponse productoResponse = serviceClient.getFiveProductFromMockService();
+        Long stock = producto.getStock();
+        producto.setStock(stock + productoResponse.getStock());
+        productoRepository.saveAndFlush(producto);
     }
 }

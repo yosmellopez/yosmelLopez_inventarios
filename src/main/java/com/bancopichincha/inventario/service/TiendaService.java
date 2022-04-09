@@ -1,9 +1,16 @@
 package com.bancopichincha.inventario.service;
 
 import com.bancopichincha.inventario.domain.Tienda;
+import com.bancopichincha.inventario.domain.Transaccion;
 import com.bancopichincha.inventario.repository.TiendaRepository;
+import com.bancopichincha.inventario.service.dto.PedidoDTO;
+import com.bancopichincha.inventario.service.dto.TiendaProductoDTO;
+import com.bancopichincha.inventario.service.mapper.ProductoMapper;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,8 +27,11 @@ public class TiendaService {
 
     private final TiendaRepository tiendaRepository;
 
-    public TiendaService(TiendaRepository tiendaRepository) {
+    private final ProductoMapper productoMapper;
+
+    public TiendaService(TiendaRepository tiendaRepository, ProductoMapper productoMapper) {
         this.tiendaRepository = tiendaRepository;
+        this.productoMapper = productoMapper;
     }
 
     /**
@@ -55,19 +65,16 @@ public class TiendaService {
     public Optional<Tienda> partialUpdate(Tienda tienda) {
         log.debug("Request to partially update Tienda : {}", tienda);
 
-        return tiendaRepository
-            .findById(tienda.getId())
-            .map(existingTienda -> {
-                if (tienda.getNombre() != null) {
-                    existingTienda.setNombre(tienda.getNombre());
-                }
-                if (tienda.getCodigo() != null) {
-                    existingTienda.setCodigo(tienda.getCodigo());
-                }
+        return tiendaRepository.findById(tienda.getId()).map(existingTienda -> {
+            if (tienda.getNombre() != null) {
+                existingTienda.setNombre(tienda.getNombre());
+            }
+            if (tienda.getCodigo() != null) {
+                existingTienda.setCodigo(tienda.getCodigo());
+            }
 
-                return existingTienda;
-            })
-            .map(tiendaRepository::save);
+            return existingTienda;
+        }).map(tiendaRepository::save);
     }
 
     /**
@@ -101,5 +108,19 @@ public class TiendaService {
     public void delete(Long id) {
         log.debug("Request to delete Tienda : {}", id);
         tiendaRepository.deleteById(id);
+    }
+
+    public TiendaProductoDTO addProductosTienda(Long id, TiendaProductoDTO tiendaProducto) {
+        Optional<Tienda> optionalTienda = tiendaRepository.findById(id);
+        Tienda tienda = optionalTienda.orElseThrow(() -> new EntityNotFoundException("No se encuentra la tienda con el identificador " + id));
+        tienda.addAllProducto(tiendaProducto.getProductos().stream().map(productoMapper::toEntity).collect(Collectors.toList()));
+        tiendaRepository.save(tienda);
+        return tiendaProducto;
+    }
+
+    public void createPedido(PedidoDTO pedido) {
+        Transaccion transaccion = new Transaccion();
+        transaccion.setFecha(LocalDate.now());
+        transaccion.setCliente(pedido.getCliente());
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,8 +41,11 @@ import tech.jhipster.web.util.HeaderUtil;
 public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait {
 
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
+
     private static final String MESSAGE_KEY = "message";
+
     private static final String PATH_KEY = "path";
+
     private static final String VIOLATIONS_KEY = "violations";
 
     @Value("${jhipster.clientApp.name}")
@@ -69,16 +73,16 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
         HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
         String requestUri = nativeRequest != null ? nativeRequest.getRequestURI() : StringUtils.EMPTY;
         ProblemBuilder builder = Problem
-            .builder()
-            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-            .withStatus(problem.getStatus())
-            .withTitle(problem.getTitle())
-            .with(PATH_KEY, requestUri);
+                .builder()
+                .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
+                .withStatus(problem.getStatus())
+                .withTitle(problem.getTitle())
+                .with(PATH_KEY, requestUri);
 
         if (problem instanceof ConstraintViolationProblem) {
             builder
-                .with(VIOLATIONS_KEY, ((ConstraintViolationProblem) problem).getViolations())
-                .with(MESSAGE_KEY, ErrorConstants.ERR_VALIDATION);
+                    .with(VIOLATIONS_KEY, ((ConstraintViolationProblem) problem).getViolations())
+                    .with(MESSAGE_KEY, ErrorConstants.ERR_VALIDATION);
         } else {
             builder.withCause(((DefaultProblem) problem).getCause()).withDetail(problem.getDetail()).withInstance(problem.getInstance());
             problem.getParameters().forEach(builder::with);
@@ -93,58 +97,68 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     public ResponseEntity<Problem> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @Nonnull NativeWebRequest request) {
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result
-            .getFieldErrors()
-            .stream()
-            .map(f ->
-                new FieldErrorVM(
-                    f.getObjectName().replaceFirst("DTO$", ""),
-                    f.getField(),
-                    StringUtils.isNotBlank(f.getDefaultMessage()) ? f.getDefaultMessage() : f.getCode()
+                .getFieldErrors()
+                .stream()
+                .map(f ->
+                        new FieldErrorVM(
+                                f.getObjectName().replaceFirst("DTO$", ""),
+                                f.getField(),
+                                StringUtils.isNotBlank(f.getDefaultMessage()) ? f.getDefaultMessage() : f.getCode()
+                        )
                 )
-            )
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
+
+        if (fieldErrors.isEmpty()) {
+            List<ObjectError> errors = result.getAllErrors();
+            fieldErrors = errors.stream()
+                    .map(f -> new FieldErrorVM(
+                            f.getObjectName().replaceFirst("DTO$", ""),
+                            f.getCode(),
+                            StringUtils.isNotBlank(f.getDefaultMessage()) ? f.getDefaultMessage() : f.getCode()
+                    )).collect(Collectors.toList());
+        }
 
         Problem problem = Problem
-            .builder()
-            .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
-            .withTitle("Method argument not valid")
-            .withStatus(defaultConstraintViolationStatus())
-            .with(MESSAGE_KEY, ErrorConstants.ERR_VALIDATION)
-            .with(FIELD_ERRORS_KEY, fieldErrors)
-            .build();
+                .builder()
+                .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
+                .withTitle("Method argument not valid")
+                .withStatus(defaultConstraintViolationStatus())
+                .with(MESSAGE_KEY, ErrorConstants.ERR_VALIDATION)
+                .with(FIELD_ERRORS_KEY, fieldErrors)
+                .build();
         return create(ex, problem, request);
     }
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleEmailAlreadyUsedException(
-        com.bancopichincha.inventario.service.EmailAlreadyUsedException ex,
-        NativeWebRequest request
+            com.bancopichincha.inventario.service.EmailAlreadyUsedException ex,
+            NativeWebRequest request
     ) {
         EmailAlreadyUsedException problem = new EmailAlreadyUsedException();
         return create(
-            problem,
-            request,
-            HeaderUtil.createFailureAlert(applicationName, false, problem.getEntityName(), problem.getErrorKey(), problem.getMessage())
+                problem,
+                request,
+                HeaderUtil.createFailureAlert(applicationName, false, problem.getEntityName(), problem.getErrorKey(), problem.getMessage())
         );
     }
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleUsernameAlreadyUsedException(
-        com.bancopichincha.inventario.service.UsernameAlreadyUsedException ex,
-        NativeWebRequest request
+            com.bancopichincha.inventario.service.UsernameAlreadyUsedException ex,
+            NativeWebRequest request
     ) {
         LoginAlreadyUsedException problem = new LoginAlreadyUsedException();
         return create(
-            problem,
-            request,
-            HeaderUtil.createFailureAlert(applicationName, false, problem.getEntityName(), problem.getErrorKey(), problem.getMessage())
+                problem,
+                request,
+                HeaderUtil.createFailureAlert(applicationName, false, problem.getEntityName(), problem.getErrorKey(), problem.getMessage())
         );
     }
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleInvalidPasswordException(
-        com.bancopichincha.inventario.service.InvalidPasswordException ex,
-        NativeWebRequest request
+            com.bancopichincha.inventario.service.InvalidPasswordException ex,
+            NativeWebRequest request
     ) {
         return create(new InvalidPasswordException(), request);
     }
@@ -152,9 +166,9 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     @ExceptionHandler
     public ResponseEntity<Problem> handleBadRequestAlertException(BadRequestAlertException ex, NativeWebRequest request) {
         return create(
-            ex,
-            request,
-            HeaderUtil.createFailureAlert(applicationName, false, ex.getEntityName(), ex.getErrorKey(), ex.getMessage())
+                ex,
+                request,
+                HeaderUtil.createFailureAlert(applicationName, false, ex.getEntityName(), ex.getErrorKey(), ex.getMessage())
         );
     }
 
@@ -171,48 +185,48 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             if (throwable instanceof HttpMessageConversionException) {
                 return Problem
-                    .builder()
-                    .withType(type)
-                    .withTitle(status.getReasonPhrase())
-                    .withStatus(status)
-                    .withDetail("Unable to convert http message")
-                    .withCause(
-                        Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
-                    );
+                        .builder()
+                        .withType(type)
+                        .withTitle(status.getReasonPhrase())
+                        .withStatus(status)
+                        .withDetail("Unable to convert http message")
+                        .withCause(
+                                Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
+                        );
             }
             if (throwable instanceof DataAccessException) {
                 return Problem
-                    .builder()
-                    .withType(type)
-                    .withTitle(status.getReasonPhrase())
-                    .withStatus(status)
-                    .withDetail("Failure during data access")
-                    .withCause(
-                        Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
-                    );
+                        .builder()
+                        .withType(type)
+                        .withTitle(status.getReasonPhrase())
+                        .withStatus(status)
+                        .withDetail("Failure during data access")
+                        .withCause(
+                                Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
+                        );
             }
             if (containsPackageName(throwable.getMessage())) {
                 return Problem
-                    .builder()
-                    .withType(type)
-                    .withTitle(status.getReasonPhrase())
-                    .withStatus(status)
-                    .withDetail("Unexpected runtime exception")
-                    .withCause(
-                        Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
-                    );
+                        .builder()
+                        .withType(type)
+                        .withTitle(status.getReasonPhrase())
+                        .withStatus(status)
+                        .withDetail("Unexpected runtime exception")
+                        .withCause(
+                                Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
+                        );
             }
         }
 
         return Problem
-            .builder()
-            .withType(type)
-            .withTitle(status.getReasonPhrase())
-            .withStatus(status)
-            .withDetail(throwable.getMessage())
-            .withCause(
-                Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
-            );
+                .builder()
+                .withType(type)
+                .withTitle(status.getReasonPhrase())
+                .withStatus(status)
+                .withDetail(throwable.getMessage())
+                .withCause(
+                        Optional.ofNullable(throwable.getCause()).filter(cause -> isCausalChainsEnabled()).map(this::toProblem).orElse(null)
+                );
     }
 
     private boolean containsPackageName(String message) {

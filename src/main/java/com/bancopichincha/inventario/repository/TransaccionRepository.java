@@ -1,6 +1,7 @@
 package com.bancopichincha.inventario.repository;
 
 import com.bancopichincha.inventario.domain.Transaccion;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,8 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TransaccionRepository extends JpaRepository<Transaccion, Long> {}
+public interface TransaccionRepository extends JpaRepository<Transaccion, Long> {
+
+    @Query("SELECT t FROM Transaccion t GROUP BY t.fecha")
+    List<Transaccion> findTransaccionGroupByFecha();
+}

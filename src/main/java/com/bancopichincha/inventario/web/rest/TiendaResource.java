@@ -3,6 +3,7 @@ package com.bancopichincha.inventario.web.rest;
 import com.bancopichincha.inventario.domain.Tienda;
 import com.bancopichincha.inventario.repository.TiendaRepository;
 import com.bancopichincha.inventario.service.TiendaService;
+import com.bancopichincha.inventario.service.dto.TiendaProductoDTO;
 import com.bancopichincha.inventario.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,7 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -57,9 +66,8 @@ public class TiendaResource {
         }
         Tienda result = tiendaService.save(tienda);
         return ResponseEntity
-            .created(new URI("/api/tiendas/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .created(URI.create("/api/tiendas/" + result.getId())).headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -73,10 +81,7 @@ public class TiendaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/tiendas/{id}")
-    public ResponseEntity<Tienda> updateTienda(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Tienda tienda
-    ) throws URISyntaxException {
+    public ResponseEntity<Tienda> updateTienda(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Tienda tienda) throws URISyntaxException {
         log.debug("REST request to update Tienda : {}, {}", id, tienda);
         if (tienda.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -90,10 +95,32 @@ public class TiendaResource {
         }
 
         Tienda result = tiendaService.update(tienda);
-        return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, tienda.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, tienda.getId().toString()))
+                .body(result);
+    }
+
+    /**
+     * {@code PUT  /tiendas/:id} : Updates an existing tiendaProductoDTO.
+     *
+     * @param id the id of the tiendaProductoDTO to save.
+     * @param tiendaProducto the tiendaProductoDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tiendaProductoDTO,
+     * or with status {@code 400 (Bad Request)} if the tiendaProductoDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the tiendaProductoDTO couldn't be updated.
+     */
+    @PutMapping("/tiendas/{id}/productos")
+    public ResponseEntity<TiendaProductoDTO> addProductoTienda(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody TiendaProductoDTO tiendaProducto) {
+        log.debug("REST request to update Tienda : {}, {}", id, tiendaProducto);
+
+        if (!tiendaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        TiendaProductoDTO result = tiendaService.addProductosTienda(id, tiendaProducto);
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString()))
+                .body(result);
     }
 
     /**
@@ -107,11 +134,8 @@ public class TiendaResource {
      * or with status {@code 500 (Internal Server Error)} if the tienda couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/tiendas/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Tienda> partialUpdateTienda(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Tienda tienda
-    ) throws URISyntaxException {
+    @PatchMapping(value = "/tiendas/{id}", consumes = {"application/json", "application/merge-patch+json"})
+    public ResponseEntity<Tienda> partialUpdateTienda(@PathVariable(value = "id", required = false) final Long id, @NotNull @RequestBody Tienda tienda) throws URISyntaxException {
         log.debug("REST request to partial update Tienda partially : {}, {}", id, tienda);
         if (tienda.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -126,10 +150,7 @@ public class TiendaResource {
 
         Optional<Tienda> result = tiendaService.partialUpdate(tienda);
 
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, tienda.getId().toString())
-        );
+        return ResponseUtil.wrapOrNotFound(result, HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, tienda.getId().toString()));
     }
 
     /**
@@ -166,9 +187,8 @@ public class TiendaResource {
     public ResponseEntity<Void> deleteTienda(@PathVariable Long id) {
         log.debug("REST request to delete Tienda : {}", id);
         tiendaService.delete(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
-            .build();
+        return ResponseEntity.noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+                .build();
     }
 }

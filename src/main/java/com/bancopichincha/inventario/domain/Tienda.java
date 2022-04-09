@@ -1,8 +1,12 @@
 package com.bancopichincha.inventario.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -30,6 +34,13 @@ public class Tienda implements Serializable {
     @Column(name = "codigo", nullable = false)
     private String codigo;
 
+    @ManyToMany
+    @JoinTable(name = "tienda_producto",
+            joinColumns = @JoinColumn(name = "tienda_id"),
+            inverseJoinColumns = @JoinColumn(name = "producto_id"))
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = {"transaccions"}, allowSetters = true)
+    private Set<Producto> productos = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -71,7 +82,19 @@ public class Tienda implements Serializable {
         this.codigo = codigo;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    public void addAllProducto(List<Producto> productos) {
+        this.productos.addAll(productos);
+    }
+
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
+    }
+
+// jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -94,9 +117,10 @@ public class Tienda implements Serializable {
     @Override
     public String toString() {
         return "Tienda{" +
-            "id=" + getId() +
-            ", nombre='" + getNombre() + "'" +
-            ", codigo='" + getCodigo() + "'" +
-            "}";
+                "id=" + getId() +
+                ", nombre='" + getNombre() + "'" +
+                ", codigo='" + getCodigo() + "'" +
+                "}";
     }
+
 }
