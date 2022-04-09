@@ -118,9 +118,4 @@ public class TiendaService {
         return tiendaProducto;
     }
 
-    public void createPedido(PedidoDTO pedido) {
-        Transaccion transaccion = new Transaccion();
-        transaccion.setFecha(LocalDate.now());
-        transaccion.setCliente(pedido.getCliente());
-    }
 }

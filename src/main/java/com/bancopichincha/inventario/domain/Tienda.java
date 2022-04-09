@@ -1,6 +1,7 @@
 package com.bancopichincha.inventario.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,7 @@ public class Tienda implements Serializable {
             joinColumns = @JoinColumn(name = "tienda_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id"))
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonIgnoreProperties(value = {"transaccions"}, allowSetters = true)
     private Set<Producto> productos = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here

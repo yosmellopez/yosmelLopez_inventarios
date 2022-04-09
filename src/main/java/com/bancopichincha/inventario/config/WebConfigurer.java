@@ -1,26 +1,29 @@
 package com.bancopichincha.inventario.config;
 
-import javax.servlet.*;
+import com.bancopichincha.inventario.web.rest.resolver.LocalDateHandlerResolver;
+import java.util.List;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.*;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tech.jhipster.config.JHipsterProperties;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-public class WebConfigurer implements ServletContextInitializer {
+public class WebConfigurer implements ServletContextInitializer, WebMvcConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
@@ -28,9 +31,12 @@ public class WebConfigurer implements ServletContextInitializer {
 
     private final JHipsterProperties jHipsterProperties;
 
-    public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
+    private final LocalDateHandlerResolver handlerResolver;
+
+    public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties, LocalDateHandlerResolver handlerResolver) {
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
+        this.handlerResolver = handlerResolver;
     }
 
     @Override
@@ -54,5 +60,10 @@ public class WebConfigurer implements ServletContextInitializer {
             source.registerCorsConfiguration("/swagger-ui/**", config);
         }
         return new CorsFilter(source);
+    }
+
+    @Override
+    public void addArgumentResolvers(@NonNull List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(handlerResolver);
     }
 }
