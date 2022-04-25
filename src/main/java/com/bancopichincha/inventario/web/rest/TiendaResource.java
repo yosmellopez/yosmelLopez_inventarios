@@ -56,10 +56,9 @@ public class TiendaResource {
      *
      * @param tienda the tienda to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new tienda, or with status {@code 400 (Bad Request)} if the tienda has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/tiendas")
-    public ResponseEntity<Tienda> createTienda(@Valid @RequestBody Tienda tienda) throws URISyntaxException {
+    public ResponseEntity<Tienda> createTienda(@Valid @RequestBody Tienda tienda) {
         log.debug("REST request to save Tienda : {}", tienda);
         if (tienda.getId() != null) {
             throw new BadRequestAlertException("A new tienda cannot already have an ID", ENTITY_NAME, "idexists");
@@ -78,10 +77,9 @@ public class TiendaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tienda,
      * or with status {@code 400 (Bad Request)} if the tienda is not valid,
      * or with status {@code 500 (Internal Server Error)} if the tienda couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/tiendas/{id}")
-    public ResponseEntity<Tienda> updateTienda(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Tienda tienda) throws URISyntaxException {
+    public ResponseEntity<Tienda> updateTienda(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Tienda tienda) {
         log.debug("REST request to update Tienda : {}, {}", id, tienda);
         if (tienda.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -132,10 +130,9 @@ public class TiendaResource {
      * or with status {@code 400 (Bad Request)} if the tienda is not valid,
      * or with status {@code 404 (Not Found)} if the tienda is not found,
      * or with status {@code 500 (Internal Server Error)} if the tienda couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/tiendas/{id}", consumes = {"application/json", "application/merge-patch+json"})
-    public ResponseEntity<Tienda> partialUpdateTienda(@PathVariable(value = "id", required = false) final Long id, @NotNull @RequestBody Tienda tienda) throws URISyntaxException {
+    public ResponseEntity<Tienda> partialUpdateTienda(@PathVariable(value = "id", required = false) final Long id, @NotNull @RequestBody Tienda tienda) {
         log.debug("REST request to partial update Tienda partially : {}, {}", id, tienda);
         if (tienda.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

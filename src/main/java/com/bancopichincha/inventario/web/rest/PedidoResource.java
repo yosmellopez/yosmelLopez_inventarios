@@ -44,7 +44,7 @@ public class PedidoResource {
      */
     @PostMapping("/pedidos")
     public ResponseEntity<Void> createPedidoCliente(@Valid @RequestBody PedidoDTO pedido) {
-        log.debug("REST request to save Tienda : {}", pedido);
+        log.debug("REST request to save Pedido : {}", pedido);
         transaccionService.createPedido(pedido);
         return ResponseEntity
                 .noContent()

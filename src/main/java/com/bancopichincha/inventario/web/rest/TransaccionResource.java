@@ -8,7 +8,6 @@ import com.bancopichincha.inventario.service.dto.TransaccionMonto;
 import com.bancopichincha.inventario.service.params.RangeDateParam;
 import com.bancopichincha.inventario.web.rest.errors.BadRequestAlertException;
 import com.bancopichincha.inventario.web.rest.validator.annotation.DateRange;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -60,17 +59,16 @@ public class TransaccionResource {
      *
      * @param transaccion the transaccion to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new transaccion, or with status {@code 400 (Bad Request)} if the transaccion has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/transaccions")
-    public ResponseEntity<Transaccion> createTransaccion(@Valid @RequestBody Transaccion transaccion) throws URISyntaxException {
+    public ResponseEntity<Transaccion> createTransaccion(@Valid @RequestBody Transaccion transaccion) {
         log.debug("REST request to save Transaccion : {}", transaccion);
         if (transaccion.getId() != null) {
             throw new BadRequestAlertException("A new transaccion cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Transaccion result = transaccionRepository.save(transaccion);
         return ResponseEntity
-                .created(new URI("/api/transaccions/" + result.getId()))
+                .created(URI.create("/api/transaccions/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
                 .body(result);
     }
@@ -112,7 +110,7 @@ public class TransaccionResource {
     }
 
     @GetMapping(path = "/transaccions/reporte")
-    public void getAllEmployeesInCsv(HttpServletResponse servletResponse, @Valid @DateRange RangeDateParam dateParam, @RequestParam Long clientId) throws IOException {
+    public void getAllEmployeesInCsv(HttpServletResponse servletResponse, @Valid @DateRange RangeDateParam dateParam, @RequestParam Long clientId) {
         servletResponse.setContentType("text/csv");
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"transacciones.csv\"");
         csvExportService.writeTransaccionesToCsv(servletResponse, dateParam, clientId);

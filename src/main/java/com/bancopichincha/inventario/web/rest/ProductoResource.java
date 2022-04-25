@@ -55,17 +55,16 @@ public class ProductoResource {
      *
      * @param productoDTO the productoDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new productoDTO, or with status {@code 400 (Bad Request)} if the producto has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/productos")
-    public ResponseEntity<ProductoDTO> createProducto(@Valid @RequestBody ProductoDTO productoDTO) throws URISyntaxException {
+    public ResponseEntity<ProductoDTO> createProducto(@Valid @RequestBody ProductoDTO productoDTO) {
         log.debug("REST request to save Producto : {}", productoDTO);
         if (productoDTO.getId() != null) {
             throw new BadRequestAlertException("A new producto cannot already have an ID", ENTITY_NAME, "idexists");
         }
         ProductoDTO result = productoService.save(productoDTO);
         return ResponseEntity
-                .created(new URI("/api/productos/" + result.getId()))
+                .created(URI.create("/api/productos/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
                 .body(result);
     }
@@ -78,13 +77,12 @@ public class ProductoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated productoDTO,
      * or with status {@code 400 (Bad Request)} if the productoDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the productoDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/productos/{id}")
     public ResponseEntity<ProductoDTO> updateProducto(
             @PathVariable(value = "id", required = false) final Long id,
             @Valid @RequestBody ProductoDTO productoDTO
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to update Producto : {}, {}", id, productoDTO);
         if (productoDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

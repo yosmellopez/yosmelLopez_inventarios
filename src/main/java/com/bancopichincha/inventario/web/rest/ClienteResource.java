@@ -55,17 +55,16 @@ public class ClienteResource {
      *
      * @param cliente the cliente to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new cliente, or with status {@code 400 (Bad Request)} if the cliente has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/clientes")
-    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) throws URISyntaxException {
+    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) {
         log.debug("REST request to save Cliente : {}", cliente);
         if (cliente.getId() != null) {
             throw new BadRequestAlertException("A new cliente cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Cliente result = clienteService.save(cliente);
         return ResponseEntity
-                .created(new URI("/api/clientes/" + result.getId()))
+                .created(URI.create("/api/clientes/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
                 .body(result);
     }
